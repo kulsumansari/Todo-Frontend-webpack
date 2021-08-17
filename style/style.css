@@ -1,0 +1,111 @@
+
+.container{
+    width: 70vw;
+    margin: 0px auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.heading{
+    font-family: 'Overlock SC', cursive;
+    display: block;
+    font-size: 3rem;
+    margin:0px 0px 5px  15px;
+    letter-spacing: 2px;
+}
+.container img{
+    height: 100px;
+}
+.todo-form{
+    width:90%;
+    text-align: center;
+}
+.taskInput{
+    width:65%;
+    height: 40px;  
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+    padding-left: 15px;
+
+}
+.submit,.reset{
+    background-color: rgba(255, 255, 255, 0.801);
+    margin: 5px;
+    width :80px;
+    height: 45px;
+    border-radius: 5px;
+    font-size: 18px;
+}
+
+.submit{
+    border: 2px solid blue;
+}
+.reset{
+    border: 2px solid rgb(255, 0, 0);
+}
+#taskList{
+    width: 80%;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.todo-item{
+    width:100%;
+    padding: 10px 20px;
+    margin-top: 15px;
+    box-shadow: 2px 2px 3px 3px rgba(172, 172, 247, 0.692);
+    border-radius: 5px;
+}
+.todo-item p{
+    font-size: 14px;
+    font-style:italic;
+}
+
+.todo-desc{
+    font-size: 20px;
+    height: 30px; 
+    width:70%;
+    margin :5px;
+    background-color: white;
+    border:none;
+    font-family: 'Overlock SC', cursive;
+
+}
+.btn-edit,.btn-del{
+    border:none;
+    float: right;
+    margin-left : 8px;
+}
+.btn-del{
+    color: crimson;
+    
+}
+.fa-check{
+    color: rgb(21, 201, 21);
+}
+.btn-del:hover,
+.btn-edit:hover{
+    font-size: 25px;
+}
+
+@media (max-width: 998px){
+    .container{
+        width:95vw;
+    }
+}
+@media (max-width: 698px){
+    
+   .taskInput{
+        width: 90%;
+    }
+}
+@media (max-width:467px) {
+   .todo-desc{
+       width:85%;
+   }
+}
