@@ -1,86 +1,322 @@
-/*
- * ATTENTION: The "eval" devtool has been used (maybe by default in mode: "development").
- * This devtool is neither made for production nor for readable output files.
- * It uses "eval()" calls to create a separate source file in the browser devtools.
- * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
- * or disable the default devtool with "devtool: false".
- * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
- */
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
-/******/ 	var __webpack_modules__ = ({
-
-/***/ "./assets/todoImg.png":
-/*!****************************!*\
-  !*** ./assets/todoImg.png ***!
-  \****************************/
+/******/ 	var __webpack_modules__ = ([
+/* 0 */,
+/* 1 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__webpack_require__.p + \"assets/d460659a82d28551fc079943fa4c66da.png\");\n\n//# sourceURL=webpack://todo-client-webpack/./assets/todoImg.png?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getTodos": () => (/* binding */ getTodos),
+/* harmony export */   "addTask": () => (/* binding */ addTask),
+/* harmony export */   "updateTask": () => (/* binding */ updateTask),
+/* harmony export */   "delTask": () => (/* binding */ delTask)
+/* harmony export */ });
+/* harmony import */ var _components_task_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+
+
+const url = "https://todolist-backend-server.herokuapp.com/tasks";
+
+const getTodos=()=>{
+    fetch(url)
+    .then((response)=>{
+        return response.json();
+    })
+    .then((res) => {
+        let Tasks = res.data;
+        Tasks.forEach(task => {
+            (0,_components_task_js__WEBPACK_IMPORTED_MODULE_0__.addToDOM)(task)
+        });
+    })
+    .catch((err)=>{
+        //Server is offline
+        alert(`Error while fetching tasks : ${err.message}!`)
+    });
+}
+
+const addTask = (obj)=>{
+    fetch(url,obj)
+    .then((response)=>{
+        return response.json();
+    })
+    .then((res) => {
+        let task = res.data;
+        (0,_components_task_js__WEBPACK_IMPORTED_MODULE_0__.addToDOM)(task)
+    })
+    .catch((err)=>{
+        // server is offline
+        alert(`Error while Creating task : Failed to create new task!`)
+    });
+}
+
+const updateTask = (id, obj)=>{
+    fetch(`${url}/${id}`,obj)
+    .then((response)=>{
+        return response.json()
+    })
+    .then((res)=>{
+        document.getElementById(`${id}`).querySelector('.todo-desc').prevContent = res.data.content;
+        document.getElementById(`${id}`).querySelector('input[type=checkbox').prevStatus = res.data.isCompleted;
+    })
+    .catch((err)=>{
+        // server is offline
+        document.getElementById(`${id}`).querySelector('.todo-desc').value = document.getElementById(`${id}`).querySelector('.todo-desc').prevContent;
+        let chkBox = document.getElementById(`${id}`).querySelector('input[type=checkbox]')
+        chkBox.checked = chkBox.prevStatus;
+        
+        if(!chkBox.checked)
+            document.getElementById(`${id}`).querySelector('.todo-desc').style.textDecoration = "none";
+        else
+            document.getElementById(`${id}`).querySelector('.todo-desc').style.textDecoration = "line-through";
+        
+        alert(`Error while Updating task : Failed to update task!`)
+    });
+}
+
+const delTask = (id ,obj) =>{
+    fetch(`${url}/${id}`,obj)
+    .then((response)=>{
+        if(response.status === 204){
+            document.getElementById(`${id}`).remove();
+        }
+    })
+    .catch((err)=>{
+        // server is offline
+        alert(`Error while Deleting task : Failed to delete task!`)
+    });
+}
+
 
 /***/ }),
-
-/***/ "./style/style.css":
-/*!*************************!*\
-  !*** ./style/style.css ***!
-  \*************************/
+/* 2 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extract-plugin\n\n\n//# sourceURL=webpack://todo-client-webpack/./style/style.css?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "addToDOM": () => (/* binding */ addToDOM)
+/* harmony export */ });
+/* harmony import */ var _actions_domOperation_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
+
+
+const addToDOM = (task) => {        
+        let taskElem = document.createElement("div");
+        taskElem.classList.add('todo-item');
+        taskElem.id = task.taskId;
+        taskElem.isEdited = false;
+        
+        let checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = task.isCompleted;
+        checkbox.prevStatus = task.isCompleted;
+        checkbox.addEventListener('change',_actions_domOperation_js__WEBPACK_IMPORTED_MODULE_0__.taskUpdate)
+
+        let taskDesc = document.createElement("input");
+        taskDesc.classList.add('todo-desc')
+        taskDesc.disabled = "true";
+        taskDesc.value = task.content;
+        taskDesc.prevContent = task.content
+
+        taskDesc.addEventListener('change' , ()=>{
+            taskElem.isEdited =true;
+        })
+        
+        if(checkbox.checked){
+            taskDesc.style.textDecoration="line-through"
+        }
+
+        let btnEdit = document.createElement("i");
+        btnEdit.classList.add("fa","fa-edit","btn-edit")
+        btnEdit.addEventListener('click',_actions_domOperation_js__WEBPACK_IMPORTED_MODULE_0__.taskUpdate)
+
+        let btnDel = document.createElement("i");
+        btnDel.classList.add("fa","fa-times","btn-del");
+        btnDel.addEventListener('click',()=>{(0,_actions_domOperation_js__WEBPACK_IMPORTED_MODULE_0__.deleteTask)(event.target.parentElement.id)})
+
+        let taskLog = document.createElement("p");
+        taskLog.innerText= task.createdAt;
+
+        taskElem.appendChild(checkbox);
+        taskElem.appendChild(taskDesc);
+        taskElem.appendChild(btnDel);
+        taskElem.appendChild(btnEdit);
+        taskElem.appendChild(taskLog);
+        taskList.appendChild(taskElem)
+}
+
+
 
 /***/ }),
-
-/***/ "./src/actions/domOperation.js":
-/*!*************************************!*\
-  !*** ./src/actions/domOperation.js ***!
-  \*************************************/
+/* 3 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"taskUpdate\": () => (/* binding */ taskUpdate),\n/* harmony export */   \"update\": () => (/* binding */ update),\n/* harmony export */   \"deleteTask\": () => (/* binding */ deleteTask)\n/* harmony export */ });\n/* harmony import */ var _apiCalls_todoAPI_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../apiCalls/todoAPI.js */ \"./src/apiCalls/todoAPI.js\");\n\n\ntodoForm.addEventListener('submit',(event) => {\n    //client is offline\n    if(navigator.onLine){\n        event.preventDefault();\n        let taskDesc = document.todoForm.task.value;\n        if(taskDesc !== ''){\n            let obj = {\n                method: 'POST',\n                body: JSON.stringify({\n                    \"content\":taskDesc, \n                    \"createdAt\": getDate(),\n                    \"updatedAt\": \"none\"\n                }),\n                headers: {\n                    \"Content-Type\": \"application/json\"\n                } \n            }\n            ;(0,_apiCalls_todoAPI_js__WEBPACK_IMPORTED_MODULE_0__.addTask)(obj)\n            document.todoForm.task.value = '';\n        }\n    }else{\n        alert('You are not connected to internet!')  \n    }\n});\n\ntodoForm.reset.addEventListener('click',() => {\n    todoForm.task.value = \"\"\n});\n\nconst getDate=()=>{\n    var date = new Date();\n    var dd = date.getDate();\n    var mm = date.getMonth() + 1;\n    if (dd < 10) {\n        dd = `${dd}`;\n    }\n    if (mm < 10) {\n        mm = `${mm}`;\n    }\n    return `${date.getHours()}:${date.getHours()} ${dd}/${mm}/${date.getFullYear()}`;\n}\n\nconst taskUpdate =(event) =>{\n    let id =event.target.parentElement.id;\n    let parentDiv = document.getElementById(`${id}`)\n\n    if(navigator.onLine){\n        let input = parentDiv.querySelector('.todo-desc');\n        let btnEdit = parentDiv.querySelector('.btn-edit');\n        \n        if(event.type === 'click'){\n            input.disabled = false;\n            input.focus();\n            btnEdit.classList.remove('fa-edit');\n            btnEdit.classList.add('fa-check');\n            btnEdit.addEventListener('click',  edit)\n        }\n        if (event.type === 'change'){\n            let checkBoxStatus = parentDiv.querySelector('input[type=checkbox]').checked;\n            if(checkBoxStatus) input.style.textDecoration=\"line-through\";\n            else input.style.textDecoration=\"none\";\n            update(id, input.value ,parentDiv.querySelector('p').innerText, checkBoxStatus)\n        }  \n    }else{\n        alert('You are not connected to internet!')  \n        parentDiv.querySelector('input[type=checkbox]').checked = parentDiv.querySelector('input[type=checkbox]').prevStatus;\n    }\n}\n\nconst edit=(event)=>{\n    let id =event.target.parentElement.id;\n    let parentDiv = document.getElementById(`${id}`)\n    let input = parentDiv.querySelector('.todo-desc');\n    let btnEdit = parentDiv.querySelector('.btn-edit');\n\n    let confirmMsg = confirm('Do You want to update task?');\n        if( confirmMsg ){\n            if(parentDiv.isEdited && input.value.length > 0){\n                update(id, input.value , parentDiv.querySelector('p').innerText , parentDiv.querySelector('input[type=checkbox]').checked  )\n                parentDiv.isEdited =false;\n            }else{\n                alert('invalid Input: Your content has not been changed or your task description is Empty!!')\n            }\n        }\n   \n    btnEdit.classList.remove('fa-check');\n    btnEdit.classList.add('fa-edit');\n    input.disabled = true;\n    btnEdit.removeEventListener('click' , edit)\n    btnEdit.addEventListener('click', taskUpdate ) ;\n}\n\nconst update = async (id,content,createdAt, isCompleted) =>{\n    let obj = {\n        method: 'POST',\n        body: JSON.stringify({\n            \"content\": content,\n            \"createdAt\":createdAt,\n            \"updatedAt\": getDate(),\n            \"isCompleted\": isCompleted\n        }),\n        headers: {\n            \"Content-Type\": \"application/json\"\n        } \n    }\n    await (0,_apiCalls_todoAPI_js__WEBPACK_IMPORTED_MODULE_0__.updateTask)(id, obj)\n} \n\n\nconst deleteTask = async (id) =>{\n    if(navigator.onLine){\n        let confirmMsg = confirm('Do You want to delete the task?');\n        if( confirmMsg ){\n            let obj = {\n                method: 'DELETE',\n            }\n            await (0,_apiCalls_todoAPI_js__WEBPACK_IMPORTED_MODULE_0__.delTask)(id ,obj)\n        }\n    }else{\n        alert('You are not connected to internet!')  \n    }\n}\n\n//# sourceURL=webpack://todo-client-webpack/./src/actions/domOperation.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "taskUpdate": () => (/* binding */ taskUpdate),
+/* harmony export */   "update": () => (/* binding */ update),
+/* harmony export */   "deleteTask": () => (/* binding */ deleteTask)
+/* harmony export */ });
+/* harmony import */ var _apiCalls_todoAPI_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
+
+
+todoForm.addEventListener('submit',(event) => {
+    //client is offline
+    if(navigator.onLine){
+        event.preventDefault();
+        let taskDesc = document.todoForm.task.value;
+        if(taskDesc !== ''){
+            let obj = {
+                method: 'POST',
+                body: JSON.stringify({
+                    "content":taskDesc, 
+                    "createdAt": getDate(),
+                    "updatedAt": "none"
+                }),
+                headers: {
+                    "Content-Type": "application/json"
+                } 
+            }
+            ;(0,_apiCalls_todoAPI_js__WEBPACK_IMPORTED_MODULE_0__.addTask)(obj)
+            document.todoForm.task.value = '';
+        }
+    }else{
+        alert('You are not connected to internet!')  
+    }
+});
+
+todoForm.reset.addEventListener('click',() => {
+    todoForm.task.value = ""
+});
+
+const getDate=()=>{
+    var date = new Date();
+    var dd = date.getDate();
+    var mm = date.getMonth() + 1;
+    if (dd < 10) {
+        dd = `${dd}`;
+    }
+    if (mm < 10) {
+        mm = `${mm}`;
+    }
+    return `${date.getHours()}:${date.getHours()} ${dd}/${mm}/${date.getFullYear()}`;
+}
+
+const taskUpdate =(event) =>{
+    let id =event.target.parentElement.id;
+    let parentDiv = document.getElementById(`${id}`)
+
+    if(navigator.onLine){
+        let input = parentDiv.querySelector('.todo-desc');
+        let btnEdit = parentDiv.querySelector('.btn-edit');
+        
+        if(event.type === 'click'){
+            input.disabled = false;
+            input.focus();
+            btnEdit.classList.remove('fa-edit');
+            btnEdit.classList.add('fa-check');
+            btnEdit.addEventListener('click',  edit)
+        }
+        if (event.type === 'change'){
+            let checkBoxStatus = parentDiv.querySelector('input[type=checkbox]').checked;
+            if(checkBoxStatus) input.style.textDecoration="line-through";
+            else input.style.textDecoration="none";
+            update(id, input.value ,parentDiv.querySelector('p').innerText, checkBoxStatus)
+        }  
+    }else{
+        alert('You are not connected to internet!')  
+        parentDiv.querySelector('input[type=checkbox]').checked = parentDiv.querySelector('input[type=checkbox]').prevStatus;
+    }
+}
+
+const edit=(event)=>{
+    let id =event.target.parentElement.id;
+    let parentDiv = document.getElementById(`${id}`)
+    let input = parentDiv.querySelector('.todo-desc');
+    let btnEdit = parentDiv.querySelector('.btn-edit');
+
+    let confirmMsg = confirm('Do You want to update task?');
+        if( confirmMsg ){
+            if(parentDiv.isEdited && input.value.length > 0){
+                update(id, input.value , parentDiv.querySelector('p').innerText , parentDiv.querySelector('input[type=checkbox]').checked  )
+                parentDiv.isEdited =false;
+            }else{
+                alert('invalid Input: Your content has not been changed or your task description is Empty!!')
+            }
+        }
+   
+    btnEdit.classList.remove('fa-check');
+    btnEdit.classList.add('fa-edit');
+    input.disabled = true;
+    btnEdit.removeEventListener('click' , edit)
+    btnEdit.addEventListener('click', taskUpdate ) ;
+}
+
+const update = async (id,content,createdAt, isCompleted) =>{
+    let obj = {
+        method: 'POST',
+        body: JSON.stringify({
+            "content": content,
+            "createdAt":createdAt,
+            "updatedAt": getDate(),
+            "isCompleted": isCompleted
+        }),
+        headers: {
+            "Content-Type": "application/json"
+        } 
+    }
+    await (0,_apiCalls_todoAPI_js__WEBPACK_IMPORTED_MODULE_0__.updateTask)(id, obj)
+} 
+
+
+const deleteTask = async (id) =>{
+    if(navigator.onLine){
+        let confirmMsg = confirm('Do You want to delete the task?');
+        if( confirmMsg ){
+            let obj = {
+                method: 'DELETE',
+            }
+            await (0,_apiCalls_todoAPI_js__WEBPACK_IMPORTED_MODULE_0__.delTask)(id ,obj)
+        }
+    }else{
+        alert('You are not connected to internet!')  
+    }
+}
 
 /***/ }),
-
-/***/ "./src/apiCalls/todoAPI.js":
-/*!*********************************!*\
-  !*** ./src/apiCalls/todoAPI.js ***!
-  \*********************************/
+/* 4 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"getTodos\": () => (/* binding */ getTodos),\n/* harmony export */   \"addTask\": () => (/* binding */ addTask),\n/* harmony export */   \"updateTask\": () => (/* binding */ updateTask),\n/* harmony export */   \"delTask\": () => (/* binding */ delTask)\n/* harmony export */ });\n/* harmony import */ var _components_task_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/task.js */ \"./src/components/task.js\");\n\n\nconst url = \"https://todolist-backend-server.herokuapp.com/tasks\";\n\nconst getTodos=()=>{\n    fetch(url)\n    .then((response)=>{\n        return response.json();\n    })\n    .then((res) => {\n        let Tasks = res.data;\n        Tasks.forEach(task => {\n            (0,_components_task_js__WEBPACK_IMPORTED_MODULE_0__.addToDOM)(task)\n        });\n    })\n    .catch((err)=>{\n        //Server is offline\n        alert(`Error while fetching tasks : ${err.message}!`)\n    });\n}\n\nconst addTask = (obj)=>{\n    fetch(url,obj)\n    .then((response)=>{\n        return response.json();\n    })\n    .then((res) => {\n        let task = res.data;\n        (0,_components_task_js__WEBPACK_IMPORTED_MODULE_0__.addToDOM)(task)\n    })\n    .catch((err)=>{\n        // server is offline\n        alert(`Error while Creating task : Failed to create new task!`)\n    });\n}\n\nconst updateTask = (id, obj)=>{\n    fetch(`${url}/${id}`,obj)\n    .then((response)=>{\n        return response.json()\n    })\n    .then((res)=>{\n        document.getElementById(`${id}`).querySelector('.todo-desc').prevContent = res.data.content;\n        document.getElementById(`${id}`).querySelector('input[type=checkbox').prevStatus = res.data.isCompleted;\n    })\n    .catch((err)=>{\n        // server is offline\n        document.getElementById(`${id}`).querySelector('.todo-desc').value = document.getElementById(`${id}`).querySelector('.todo-desc').prevContent;\n        let chkBox = document.getElementById(`${id}`).querySelector('input[type=checkbox]')\n        chkBox.checked = chkBox.prevStatus;\n        \n        if(!chkBox.checked)\n            document.getElementById(`${id}`).querySelector('.todo-desc').style.textDecoration = \"none\";\n        else\n            document.getElementById(`${id}`).querySelector('.todo-desc').style.textDecoration = \"line-through\";\n        \n        alert(`Error while Updating task : Failed to update task!`)\n    });\n}\n\nconst delTask = (id ,obj) =>{\n    fetch(`${url}/${id}`,obj)\n    .then((response)=>{\n        if(response.status === 204){\n            document.getElementById(`${id}`).remove();\n        }\n    })\n    .catch((err)=>{\n        // server is offline\n        alert(`Error while Deleting task : Failed to delete task!`)\n    });\n}\n\n\n//# sourceURL=webpack://todo-client-webpack/./src/apiCalls/todoAPI.js?");
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
 
 /***/ }),
-
-/***/ "./src/app.js":
-/*!********************!*\
-  !*** ./src/app.js ***!
-  \********************/
+/* 5 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _apiCalls_todoAPI_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./apiCalls/todoAPI.js */ \"./src/apiCalls/todoAPI.js\");\n/* harmony import */ var _style_style_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../style/style.css */ \"./style/style.css\");\n/* harmony import */ var _components_todo_image_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/todo-image.js */ \"./src/components/todo-image.js\");\n/* harmony import */ var _assets_todoImg_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../assets/todoImg.png */ \"./assets/todoImg.png\");\n\n\n\n\n\n(0,_components_todo_image_js__WEBPACK_IMPORTED_MODULE_2__.addImage)(_assets_todoImg_png__WEBPACK_IMPORTED_MODULE_3__.default)\nwindow.onload = function(event) {\n    ;(0,_apiCalls_todoAPI_js__WEBPACK_IMPORTED_MODULE_0__.getTodos)();\n}\n\n\n//# sourceURL=webpack://todo-client-webpack/./src/app.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "addImage": () => (/* binding */ addImage)
+/* harmony export */ });
+
+const addImage = (img) => {
+    var image = document.createElement('img');
+    image.src = img;
+    let div = document.querySelector('.container');
+    div.prepend(image)
+}
 
 /***/ }),
-
-/***/ "./src/components/task.js":
-/*!********************************!*\
-  !*** ./src/components/task.js ***!
-  \********************************/
+/* 6 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"addToDOM\": () => (/* binding */ addToDOM)\n/* harmony export */ });\n/* harmony import */ var _actions_domOperation_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../actions/domOperation.js */ \"./src/actions/domOperation.js\");\n\n\nconst addToDOM = (task) => {        \n        let taskElem = document.createElement(\"div\");\n        taskElem.classList.add('todo-item');\n        taskElem.id = task.taskId;\n        taskElem.isEdited = false;\n        \n        let checkbox = document.createElement(\"input\");\n        checkbox.type = \"checkbox\";\n        checkbox.checked = task.isCompleted;\n        checkbox.prevStatus = task.isCompleted;\n        checkbox.addEventListener('change',_actions_domOperation_js__WEBPACK_IMPORTED_MODULE_0__.taskUpdate)\n\n        let taskDesc = document.createElement(\"input\");\n        taskDesc.classList.add('todo-desc')\n        taskDesc.disabled = \"true\";\n        taskDesc.value = task.content;\n        taskDesc.prevContent = task.content\n\n        taskDesc.addEventListener('change' , ()=>{\n            taskElem.isEdited =true;\n        })\n        \n        if(checkbox.checked){\n            taskDesc.style.textDecoration=\"line-through\"\n        }\n\n        let btnEdit = document.createElement(\"i\");\n        btnEdit.classList.add(\"fa\",\"fa-edit\",\"btn-edit\")\n        btnEdit.addEventListener('click',_actions_domOperation_js__WEBPACK_IMPORTED_MODULE_0__.taskUpdate)\n\n        let btnDel = document.createElement(\"i\");\n        btnDel.classList.add(\"fa\",\"fa-times\",\"btn-del\");\n        btnDel.addEventListener('click',()=>{(0,_actions_domOperation_js__WEBPACK_IMPORTED_MODULE_0__.deleteTask)(event.target.parentElement.id)})\n\n        let taskLog = document.createElement(\"p\");\n        taskLog.innerText= task.createdAt;\n\n        taskElem.appendChild(checkbox);\n        taskElem.appendChild(taskDesc);\n        taskElem.appendChild(btnDel);\n        taskElem.appendChild(btnEdit);\n        taskElem.appendChild(taskLog);\n        taskList.appendChild(taskElem)\n}\n\n\n\n//# sourceURL=webpack://todo-client-webpack/./src/components/task.js?");
-
-/***/ }),
-
-/***/ "./src/components/todo-image.js":
-/*!**************************************!*\
-  !*** ./src/components/todo-image.js ***!
-  \**************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"addImage\": () => (/* binding */ addImage)\n/* harmony export */ });\n\nconst addImage = (img) => {\n    var image = document.createElement('img');\n    image.src = img;\n    let div = document.querySelector('.container');\n    div.prepend(image)\n}\n\n//# sourceURL=webpack://todo-client-webpack/./src/components/todo-image.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__webpack_require__.p + "assets/d460659a82d28551fc079943fa4c66da.png");
 
 /***/ })
-
-/******/ 	});
+/******/ 	]);
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
@@ -168,11 +404,25 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module can't be inlined because the eval devtool is used.
-/******/ 	var __webpack_exports__ = __webpack_require__("./src/app.js");
-/******/ 	
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _apiCalls_todoAPI_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
+/* harmony import */ var _style_style_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4);
+/* harmony import */ var _components_todo_image_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(5);
+/* harmony import */ var _assets_todoImg_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(6);
+
+
+
+
+
+(0,_components_todo_image_js__WEBPACK_IMPORTED_MODULE_2__.addImage)(_assets_todoImg_png__WEBPACK_IMPORTED_MODULE_3__.default)
+window.onload = function(event) {
+    ;(0,_apiCalls_todoAPI_js__WEBPACK_IMPORTED_MODULE_0__.getTodos)();
+}
+
+})();
+
 /******/ })()
 ;

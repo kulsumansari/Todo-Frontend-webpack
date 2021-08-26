@@ -19,6 +19,7 @@ const config = {
               title:'Todo List',
               filename : 'index.html',
               template : './index.html',
+              favicon : './assets/todoImg.png'
             })
     ],
     module: {
