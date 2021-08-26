@@ -15,7 +15,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_task_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
 
 
-const url = "https://todolist-backend-server.herokuapp.com/tasks";
+const url = "https://todo-backend-switch-mode.herokuapp.com/tasks";
 
 const getTodos=()=>{
     fetch(url)

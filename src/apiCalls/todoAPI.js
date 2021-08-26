@@ -1,6 +1,6 @@
 import { addToDOM } from "../components/task.js";
 
-const url = "https://todolist-backend-server.herokuapp.com/tasks";
+const url = "https://todo-backend-switch-mode.herokuapp.com/tasks";
 
 export const getTodos=()=>{
     fetch(url)
